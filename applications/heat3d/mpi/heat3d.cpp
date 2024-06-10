@@ -1,4 +1,5 @@
 #include <Kokkos_Core.hpp>
+#include "KokkosComm.hpp"
 #include <mpi.h>
 
 template <class ExecSpace>
@@ -85,10 +86,8 @@ struct CommHelper {
   template <class ViewType>
   void isend_irecv(int partner, ViewType send_buffer, ViewType recv_buffer,
                    MPI_Request* request_send, MPI_Request* request_recv) {
-    MPI_Irecv(recv_buffer.data(), recv_buffer.size(), MPI_DOUBLE, partner, 1,
-              comm, request_recv);
-    MPI_Isend(send_buffer.data(), send_buffer.size(), MPI_DOUBLE, partner, 1,
-              comm, request_send);
+    KokkosComm::irecv(recv_buffer, partner, tag, comm, request_recv); //TODO
+    KokkosComm::isend(send_buffer, partner, tag, comm, request_send); //TODO
   }
 };
 
@@ -481,31 +480,31 @@ struct System {
     if (Y_lo != 0) {
       E_down.fence();
       comm.isend_irecv(comm.down, T_down_out, T_down, &mpi_requests_send[mar],
-                       &mpi_requests_recv[mar]);
+                       &mpi_requests_recv[mar]); //TODO replace
       mar++;
     }
     if (Z_lo != 0) {
       E_front.fence();
       comm.isend_irecv(comm.front, T_front_out, T_front,
-                       &mpi_requests_send[mar], &mpi_requests_recv[mar]);
+                       &mpi_requests_send[mar], &mpi_requests_recv[mar]); //TODO replace
       mar++;
     }
     if (X_hi != X) {
       E_right.fence();
       comm.isend_irecv(comm.right, T_right_out, T_right,
-                       &mpi_requests_send[mar], &mpi_requests_recv[mar]);
+                       &mpi_requests_send[mar], &mpi_requests_recv[mar]); //TODO replace
       mar++;
     }
     if (Y_hi != Y) {
       E_up.fence();
       comm.isend_irecv(comm.up, T_up_out, T_up, &mpi_requests_send[mar],
-                       &mpi_requests_recv[mar]);
+                       &mpi_requests_recv[mar]); //TODO replace
       mar++;
     }
     if (Z_hi != Z) {
       E_back.fence();
       comm.isend_irecv(comm.back, T_back_out, T_back, &mpi_requests_send[mar],
-                       &mpi_requests_recv[mar]);
+                       &mpi_requests_recv[mar]); //TODO replace
       mar++;
     }
     mpi_active_requests = mar;
