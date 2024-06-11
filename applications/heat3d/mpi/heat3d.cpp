@@ -86,8 +86,8 @@ struct CommHelper {
   template <class ViewType>
   void isend_irecv(int partner, ViewType send_buffer, ViewType recv_buffer,
                    MPI_Request* request_send, MPI_Request* request_recv) {
-    KokkosComm::irecv(recv_buffer, partner, 1, comm, request_recv); //TODO
-    KokkosComm::isend(send_buffer, partner, 1, comm, request_send); //TODO
+    KokkosComm::Impl::irecv(Kokkos::DefaultExecutionSpace(), recv_buffer, partner, 0, MPI_COMM_WORLD, request_recv); //TODO
+    KokkosComm::isend(Kokkos::DefaultExecutionSpace(), send_buffer, partner, 0, MPI_COMM_WORLD); //TODO
   }
 };
 
